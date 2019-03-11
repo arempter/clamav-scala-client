@@ -1,0 +1,1 @@
+# clamav scala client
