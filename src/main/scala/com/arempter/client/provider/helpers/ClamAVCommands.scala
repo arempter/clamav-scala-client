@@ -7,7 +7,7 @@ import akka.util.ByteString
 import com.arempter.client.data.SocketIO
 import com.arempter.client.data.clientImplicits.Command
 
-object ClamAV {
+object ClamAVCommands {
 
   def scanInsteram(bs: ByteString)(implicit as: SocketIO ): Done = {
     as.out.write(Command("zINSTREAM\0").toBytes)
