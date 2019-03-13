@@ -1,6 +1,7 @@
 import java.io.ByteArrayInputStream
 
 import akka.actor.ActorSystem
+import akka.util.ByteString
 import com.arempter.client.provider.ClamAVStreamClient
 import org.scalatest.{AsyncWordSpec, DiagrammedAssertions}
 
@@ -34,9 +35,15 @@ class ClientSpec extends AsyncWordSpec with DiagrammedAssertions {
       val scanner = new ClamAVStreamClient
       scanner.scanStream(
         new ByteArrayInputStream("Just a String".getBytes()))
-        .map(r => assert(r == "ok"))
+        .map(r => assert(r == "OK"))
     }
 
+    "scan should find eicar in ByteString" in {
+      val scanner = new ClamAVStreamClient
+      scanner.scanStream(
+        ByteString("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"))
+        .map(r => assert(r == "noOK"))
+    }
 
   }
 }
