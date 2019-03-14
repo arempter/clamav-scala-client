@@ -14,7 +14,7 @@ import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.Future
 
-class ClamAVStreamClient(implicit system: ActorSystem) extends BaseProvider {
+class ClamAVClient(implicit system: ActorSystem) extends SocketProvider {
 
   implicit lazy val clientSettings: ClientSettings = ClientSettings(ConfigFactory.load().getConfig("clamav"))
   implicit val materializer: Materializer = ActorMaterializer()
@@ -74,9 +74,9 @@ class ClamAVStreamClient(implicit system: ActorSystem) extends BaseProvider {
 
 }
 
-object ClamAVStreamClient {
+object ClamAVClient {
   implicit val system: ActorSystem = ActorSystem("avScanner")
 
-  def apply(): ClamAVStreamClient = new ClamAVStreamClient
-  def apply(implicit system: ActorSystem): ClamAVStreamClient = new ClamAVStreamClient
+  def apply(): ClamAVClient = new ClamAVClient
+  def apply(implicit system: ActorSystem): ClamAVClient = new ClamAVClient
 }

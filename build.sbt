@@ -5,6 +5,14 @@ version := "0.1"
 scalaVersion := "2.12.8"
 val akkaVersion = "2.5.19"
 
+scalacOptions += "-unchecked"
+scalacOptions += "-deprecation"
+scalacOptions ++= Seq("-encoding", "utf-8")
+scalacOptions += "-target:jvm-1.8"
+scalacOptions += "-feature"
+scalacOptions += "-Xlint"
+scalacOptions += "-Xfatal-warnings"
+
 libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "ch.qos.logback" % "logback-classic" % "1.2.3",

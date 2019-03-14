@@ -2,16 +2,16 @@ import java.io.ByteArrayInputStream
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import com.arempter.client.provider.ClamAVStreamClient
+import com.arempter.client.provider.{ClamAVClient, StreamComponents}
 import org.scalatest.{AsyncWordSpec, DiagrammedAssertions}
 
 import scala.concurrent.Future
 
-class ClientSpec extends AsyncWordSpec with DiagrammedAssertions {
+class ClientSpec extends AsyncWordSpec with DiagrammedAssertions with StreamComponents {
 
   "Client" should {
     "scan should find eicar" in {
-     ClamAVStreamClient()
+     ClamAVClient()
       .scanStream(
         new ByteArrayInputStream("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*".getBytes()))
         .map(r => assert(r == "noOK"))
@@ -19,38 +19,37 @@ class ClientSpec extends AsyncWordSpec with DiagrammedAssertions {
 
     "parallel scan should find eicar" in {
       for {
-        _ <- ClamAVStreamClient().scanStream(
+        _ <- ClamAVClient().scanStream(
           new ByteArrayInputStream("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*".getBytes()))
           .map(r => assert(r == "noOK"))
-        s2 <- ClamAVStreamClient().scanStream(
+        s2 <- ClamAVClient().scanStream(
           new ByteArrayInputStream("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*".getBytes()))
           .map(r => assert(r == "noOK"))
       } yield s2
     }
 
     "scan should be OK for clean string" in {
-      ClamAVStreamClient().scanStream(
+      ClamAVClient().scanStream(
         new ByteArrayInputStream("Just a String".getBytes()))
         .map(r => assert(r == "OK"))
     }
 
     "scan should find eicar in ByteString" in {
-      ClamAVStreamClient().scanStream(
+      ClamAVClient().scanStream(
         ByteString("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"))
         .map(r => assert(r == "noOK"))
     }
 
     "scan should find eicar in Source" in {
-      ClamAVStreamClient().scanStream(
+      ClamAVClient().scanStream(
         Source.single(ByteString("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*")))
         .map(r => assert(r == "noOK"))
     }
 
     "scan should find eicar in Future Source" in {
-      ClamAVStreamClient().scanStream(
+      ClamAVClient().scanStream(
         Source.fromFuture(Future(ByteString("X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"))))
         .map(r => assert(r == "noOK"))
     }
-
   }
 }

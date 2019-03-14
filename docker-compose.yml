@@ -1,0 +1,6 @@
+version: "3"
+services:
+  clamd:
+    image: mk0x/docker-clamav:latest
+    ports:
+      - 3310:3310

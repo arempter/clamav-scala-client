@@ -9,7 +9,7 @@ object clientImplicits {
   }
 
   case object PingCommand extends CommandString {
-    val value = "zPING\0" // string instead of value
+    val value = "zPING\u0000" // string instead of value
   }
 
   case class Command(value: String)

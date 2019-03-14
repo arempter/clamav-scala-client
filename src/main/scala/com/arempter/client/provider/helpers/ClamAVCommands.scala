@@ -10,7 +10,7 @@ import com.arempter.client.data.clientImplicits.Command
 object ClamAVCommands {
 
   def scanInsteram(bs: ByteString)(implicit as: SocketIO ): Done = {
-    as.out.write(Command("zINSTREAM\0").toBytes)
+    as.out.write(Command("zINSTREAM\u0000").toBytes)
     as.out.flush()
     as.out.write(ByteBuffer.allocate(4).putInt(bs.length).array())
     as.out.write(bs.toArray)
