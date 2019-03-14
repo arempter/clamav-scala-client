@@ -4,18 +4,17 @@ import java.net.Socket
 
 import com.arempter.client.config.ClientSettings
 import com.arempter.client.data.SocketIO
+import com.typesafe.config.ConfigFactory
 
 import scala.util.{Failure, Success, Try}
 
 trait SocketProvider {
-  val clientSettings: ClientSettings
+  lazy val clientSettings: ClientSettings = ClientSettings(ConfigFactory.load().getConfig("clamav"))
 
-  private val SOCKET_TIMEOUT = clientSettings.clamdSocketTimeout
-
-  def getSocketInOut(host: String = "localhost", port: Int = 3310): SocketIO = {
+  def getSocketInOut(host: String = clientSettings.clamdHost, port: Int = clientSettings.clamdPort): SocketIO = {
     Try {
       val s = new Socket(host, port)
-      s.setSoTimeout(SOCKET_TIMEOUT)
+      s.setSoTimeout(clientSettings.clamdSocketTimeout)
       SocketIO(s.getInputStream, s.getOutputStream)
     } match {
       case Success(r) => r

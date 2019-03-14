@@ -7,16 +7,13 @@ import akka.stream._
 import akka.stream.javadsl.RunnableGraph
 import akka.stream.scaladsl.{Flow, GraphDSL, Sink, Source, StreamConverters}
 import akka.util.ByteString
-import com.arempter.client.config.ClientSettings
 import com.arempter.client.data.SocketIO
 import com.arempter.client.provider.helpers.ClamAVCommands._
-import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.Future
 
 class ClamAVClient(implicit system: ActorSystem) extends SocketProvider {
 
-  implicit lazy val clientSettings: ClientSettings = ClientSettings(ConfigFactory.load().getConfig("clamav"))
   implicit val materializer: Materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher // separate thread pool
 
@@ -38,21 +35,21 @@ class ClamAVClient(implicit system: ActorSystem) extends SocketProvider {
       ClosedShape
   }
 
-  private val resultPrinter = Sink.head[String]
+  private val resultSink = Sink.head[String]
 
   def scanInputStream(is: InputStream): Future[String] =
     withSocketIO(getSocketInOut(clientSettings.clamdHost, clientSettings.clamdPort)) { implicit conn =>
-      RunnableGraph.fromGraph(scanShapeGraph(StreamConverters.fromInputStream(() => is), resultPrinter)).run(materializer)
+      RunnableGraph.fromGraph(scanShapeGraph(StreamConverters.fromInputStream(() => is), resultSink)).run(materializer)
     }
 
   def scanInputStream(is: ByteString): Future[String] =
     withSocketIO(getSocketInOut(clientSettings.clamdHost, clientSettings.clamdPort)) { implicit conn =>
-      RunnableGraph.fromGraph(scanShapeGraph(Source.single(is), resultPrinter)).run(materializer)
+      RunnableGraph.fromGraph(scanShapeGraph(Source.single(is), resultSink)).run(materializer)
     }
 
   def scanInputStream(is: Source[ByteString, _]): Future[String] =
     withSocketIO(getSocketInOut(clientSettings.clamdHost, clientSettings.clamdPort)) { implicit conn =>
-      RunnableGraph.fromGraph(scanShapeGraph(is, resultPrinter)).run(materializer)
+      RunnableGraph.fromGraph(scanShapeGraph(is, resultSink)).run(materializer)
     }
 
   private def isClean(scanResult: String): Boolean =
