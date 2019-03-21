@@ -1,3 +1,5 @@
+import scalariform.formatter.preferences._
+
 name := "clamav-scala-client"
 
 version := "0.1"
@@ -25,3 +27,11 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
   "org.scalatest" %% "scalatest" % "3.0.5" % Test
 )
+
+scalariformPreferences := scalariformPreferences.value
+  .setPreference(AlignSingleLineCaseStatements, true)
+  .setPreference(DanglingCloseParenthesis, Preserve)
+  .setPreference(DoubleIndentConstructorArguments, true)
+  .setPreference(DoubleIndentMethodDeclaration, true)
+  .setPreference(NewlineAtEndOfFile, true)
+  .setPreference(SingleCasePatternOnNewline, false)

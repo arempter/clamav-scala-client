@@ -1,13 +1,12 @@
 package com.arempter.client.provider
 
 import akka.stream.FlowShape
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Sink, StreamConverters}
+import akka.stream.scaladsl.{ Broadcast, Flow, GraphDSL, Sink, StreamConverters }
 import akka.util.ByteString
 import com.arempter.client.data.SocketIO
 import com.arempter.client.provider.helpers.ClamAVCommands.scanInsteram
 
 import scala.concurrent.Future
-
 
 trait StreamComponents extends SocketProvider {
 
@@ -21,7 +20,7 @@ trait StreamComponents extends SocketProvider {
     val sinkIgnore = b.add(Sink.ignore)
 
     broadcast ~> scanInput ~> sinkIgnore
-                              responseSource ~> toStringFlow
+    responseSource ~> toStringFlow
 
     FlowShape(broadcast.in, toStringFlow.out)
   })

@@ -2,7 +2,6 @@ package com.arempter.client.config
 
 import com.typesafe.config.Config
 
-
 class ClientSettings(config: Config) {
 
   val clamdSocketTimeout = config.getInt("timeout")

@@ -6,7 +6,7 @@ import com.arempter.client.config.ClientSettings
 import com.arempter.client.data.SocketIO
 import com.typesafe.config.ConfigFactory
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 trait SocketProvider {
   lazy val clientSettings: ClientSettings = ClientSettings(ConfigFactory.load().getConfig("clamav"))

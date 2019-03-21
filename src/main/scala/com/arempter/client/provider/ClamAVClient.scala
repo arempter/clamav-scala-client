@@ -5,9 +5,9 @@ import java.io.InputStream
 import akka.actor.ActorSystem
 import akka.stream._
 import akka.stream.javadsl.RunnableGraph
-import akka.stream.scaladsl.{Flow, GraphDSL, Sink, Source, StreamConverters}
+import akka.stream.scaladsl.{ Flow, GraphDSL, Sink, Source, StreamConverters }
 import akka.util.ByteString
-import com.arempter.client.data.{ObjectClean, ObjectInfected, ScanResult, SocketIO}
+import com.arempter.client.data.{ ObjectClean, ObjectInfected, ScanResult, SocketIO }
 import com.arempter.client.provider.helpers.ClamAVCommands._
 
 import scala.concurrent.Future
@@ -19,20 +19,19 @@ class ClamAVClient(implicit system: ActorSystem) extends SocketProvider {
 
   private def withSocketIO(connection: SocketIO)(f: SocketIO => Future[String]): Future[String] = f(connection)
 
-  private def scanShapeGraph(source: Source[ByteString, _], sink: Sink[String, Future[String]])
-                            (implicit as: SocketIO): Graph[ClosedShape, Future[String]] = GraphDSL.create(sink) { implicit b => resultShape =>
-      import GraphDSL.Implicits._
+  private def scanShapeGraph(source: Source[ByteString, _], sink: Sink[String, Future[String]])(implicit as: SocketIO): Graph[ClosedShape, Future[String]] = GraphDSL.create(sink) { implicit b => resultShape =>
+    import GraphDSL.Implicits._
 
-      val isSource = b.add(source)
-      val responseSource = b.add(StreamConverters.fromInputStream(() => as.in))
-      val scanFlow = b.add(Flow[ByteString].map(scanInsteram))
-      val toStringFlow = b.add(Flow[ByteString].map(_.utf8String))
-      val sinkIgnore = b.add(Sink.ignore)
+    val isSource = b.add(source)
+    val responseSource = b.add(StreamConverters.fromInputStream(() => as.in))
+    val scanFlow = b.add(Flow[ByteString].map(scanInsteram))
+    val toStringFlow = b.add(Flow[ByteString].map(_.utf8String))
+    val sinkIgnore = b.add(Sink.ignore)
 
-      isSource ~> scanFlow ~> sinkIgnore
-                              responseSource ~> toStringFlow ~> resultShape
+    isSource ~> scanFlow ~> sinkIgnore
+    responseSource ~> toStringFlow ~> resultShape
 
-      ClosedShape
+    ClosedShape
   }
 
   private val resultSink = Sink.head[String]
@@ -56,7 +55,7 @@ class ClamAVClient(implicit system: ActorSystem) extends SocketProvider {
     scanResult.contains("OK") || !scanResult.contains("FOUND")
 
   private def checkIfClean(scanResult: String): ScanResult = isClean(scanResult) match {
-    case true => ObjectClean
+    case true  => ObjectClean
     case false => ObjectInfected
   }
 
