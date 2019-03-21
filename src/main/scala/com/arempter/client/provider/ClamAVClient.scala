@@ -36,17 +36,17 @@ class ClamAVClient(implicit system: ActorSystem) extends SocketProvider {
 
   private val resultSink = Sink.head[String]
 
-  def scanInputStream(is: InputStream): Future[String] =
+  private def scanInputStream(is: InputStream): Future[String] =
     withSocketIO(getSocketInOut(clientSettings.clamdHost, clientSettings.clamdPort)) { implicit conn =>
       RunnableGraph.fromGraph(scanShapeGraph(StreamConverters.fromInputStream(() => is), resultSink)).run(materializer)
     }
 
-  def scanInputStream(is: ByteString): Future[String] =
+  private def scanInputStream(is: ByteString): Future[String] =
     withSocketIO(getSocketInOut(clientSettings.clamdHost, clientSettings.clamdPort)) { implicit conn =>
       RunnableGraph.fromGraph(scanShapeGraph(Source.single(is), resultSink)).run(materializer)
     }
 
-  def scanInputStream(is: Source[ByteString, _]): Future[String] =
+  private def scanInputStream(is: Source[ByteString, _]): Future[String] =
     withSocketIO(getSocketInOut(clientSettings.clamdHost, clientSettings.clamdPort)) { implicit conn =>
       RunnableGraph.fromGraph(scanShapeGraph(is, resultSink)).run(materializer)
     }
