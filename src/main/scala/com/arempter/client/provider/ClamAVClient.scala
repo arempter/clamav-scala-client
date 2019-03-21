@@ -7,7 +7,7 @@ import akka.stream._
 import akka.stream.javadsl.RunnableGraph
 import akka.stream.scaladsl.{Flow, GraphDSL, Sink, Source, StreamConverters}
 import akka.util.ByteString
-import com.arempter.client.data.SocketIO
+import com.arempter.client.data.{ObjectClean, ObjectInfected, ScanResult, SocketIO}
 import com.arempter.client.provider.helpers.ClamAVCommands._
 
 import scala.concurrent.Future
@@ -55,18 +55,18 @@ class ClamAVClient(implicit system: ActorSystem) extends SocketProvider {
   private def isClean(scanResult: String): Boolean =
     scanResult.contains("OK") || !scanResult.contains("FOUND")
 
-  private def checkIfClean(scanResult: String): String = isClean(scanResult) match {
-    case true => "OK"
-    case false => "noOK"
+  private def checkIfClean(scanResult: String): ScanResult = isClean(scanResult) match {
+    case true => ObjectClean
+    case false => ObjectInfected
   }
 
-  def scanStream(input: InputStream): Future[String] =
+  def scanStream(input: InputStream): Future[ScanResult] =
     scanInputStream(input).map(checkIfClean)
 
-  def scanStream(input: ByteString): Future[String] =
+  def scanStream(input: ByteString): Future[ScanResult] =
     scanInputStream(input).map(checkIfClean)
 
-  def scanStream(input: Source[ByteString, _]): Future[String] =
+  def scanStream(input: Source[ByteString, _]): Future[ScanResult] =
     scanInputStream(input).map(checkIfClean)
 
 }

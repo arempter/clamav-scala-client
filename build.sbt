@@ -2,6 +2,8 @@ name := "clamav-scala-client"
 
 version := "0.1"
 
+organization := "com.arempter"
+
 scalaVersion := "2.12.8"
 val akkaVersion = "2.5.19"
 
